@@ -1,6 +1,5 @@
 import java.io.InputStream
 import scala.io.Source
-import scala.util.Using
 
 object Day1 {
 
