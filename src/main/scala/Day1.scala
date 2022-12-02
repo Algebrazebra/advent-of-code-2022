@@ -4,7 +4,7 @@ import scala.io.Source
 object Day1 {
 
   val dataDirectory = "./data/"
-  val fileName = "day1a.txt"
+  val fileName = "day1.txt"
   val filePath: String = dataDirectory + fileName
   val fileStream: InputStream = getClass.getResourceAsStream(filePath)
 
