@@ -1,13 +1,6 @@
 import scala.io.Source
 import java.io.InputStream
 
-sealed trait Play {
-  case object Rock extends Play
-  case object Paper extends Play
-  case object Scissors extends Play
-}
-
-
 object Day2 {
 
   val dataDirectory = "./data/"
