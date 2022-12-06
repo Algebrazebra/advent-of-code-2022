@@ -1,14 +1,7 @@
 import java.io.InputStream
 import scala.io.Source
 
-object Day1 {
-
-  val dataDirectory = "./data/"
-  val fileName = "day1.txt"
-  val filePath: String = dataDirectory + fileName
-  val fileStream: InputStream = getClass.getResourceAsStream(filePath)
-
-  lazy val inputStream: String = io.Source.fromInputStream(fileStream).mkString.trim
+object Day1 extends Puzzle {
 
   def partitionByElves(input: String): Seq[String] = input.split("\n\n").toSeq
 
@@ -20,7 +13,7 @@ object Day1 {
 
   @main
   def run(): Unit = {
-    val parsedInput = parsePartitions(partitionByElves(inputStream))
+    val parsedInput = parsePartitions(partitionByElves(getInputStream(1)))
     val calories = sumCalories(parsedInput).sortWith(_ > _)
     val mostCalories = calories.max
     println(mostCalories)
