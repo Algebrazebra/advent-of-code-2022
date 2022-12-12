@@ -1,29 +1,52 @@
-import java.io.InputStream
+import scala.util.Using
 import scala.io.Source
-import scala.math.{cos, pow, sqrt}
 
 object Day12 {
 
   val dataDirectory = "./data/"
   val fileName = "day12.txt"
   val filePath: String = dataDirectory + fileName
-  val fileStream: InputStream = getClass.getResourceAsStream(filePath)
 
-  lazy val inputStream: String = io.Source.fromInputStream(fileStream).mkString
+  def using[T](resourceName: String)(body: Source => T): T = Using.resource(Source.fromResource(resourceName))(body)
 
-  type Grid[T] = Seq[Seq[T]]
+  type Grid[T] = Map[Point, T]
+  type Graph[V] = Map[Point, Set[V]]
 
-  sealed abstract class Graph
-  case class Vertex() extends Graph
-  case class Edge(v1: Vertex, v2: Vertex) extends Graph
+  case class Point(x: Int, y: Int) {
+    def up: Point = Point(this.x, this.y + 1)
+    def down: Point = Point(this.x, this.y - 1)
+    def right: Point = Point(this.x + 1, this.y)
+    def left: Point = Point(this.x - 1, this.y)
+    def neighbors: Set[Point] = Set(this.up, this.right, this.down, this.left)
+  }
 
-  def parseGrid(input: String): Grid[Char] = input.linesIterator.map(line => line.toList).toSeq
+  // store graph as adjency list:
+  // go through chars and create nodes as Node --> Connected Nodes
 
-  def dijkstra(graph: Grid[Char], source): (Seq[Int], Seq)
+  def parseGrid(input: Source): Grid[Char] = {
+    for {
+      (line, row) <- input.getLines().zipWithIndex
+      (char, col) <- line.zipWithIndex
+    } yield Point(row, col) -> char
+  }.toMap
+
+  def isValidDestination(current: Point, destination: Point, grid: Grid[Char]): Boolean = {
+    def elevation(ofChar: Char) = ofChar match
+      case 'S' => 'a'
+      case 'E' => 'z'
+      case c => c
+    val res = elevation(grid.get(current)) <= elevation(grid.get(destination)) + 1
+  }
+
+  def createAdjacencyList(grid: Grid[Char]): Graph[Point] = {
+    grid.foreach(
+      (point, _) => point.neighbors.filter(p => isValidDestination(point, p, grid))
+    )
+  }
 
   @main
   def run12(): Unit = {
-    val grid = parseGrid("Sabqponm\nabcryxxl\naccszExk\nacctuvwj\nabdefghi")
-    println(grid)
+    val grid = using(filePath)(parseGrid)
+    println(createAdjacencyList(grid))
   }
 }
